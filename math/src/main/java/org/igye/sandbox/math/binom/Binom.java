@@ -18,11 +18,15 @@ public class Binom {
     }
 
     private void run() {
-        String binom1 = polToString(binomV1(2L));
-        String binom2 = polToString(binomV2(2L));
+        long n = 7L;
+        String binom1 = polToString(binomV1(n));
+        String binom2 = polToString(binomV2(n));
+        String binom3 = polToString(binomV3(n));
         assert binom1.equals(binom2);
+        assert binom2.equals(binom3);
         System.out.println(binom1);
         System.out.println(binom2);
+        System.out.println(binom3);
     }
 
     private List<Pair<Rational, List<Long>>> binomV1(long n) {
@@ -42,6 +46,20 @@ public class Binom {
             List<Long> right = List.of(n - k, k);
             res.add(Pair.of(left, right));
         }
+        return sort(res);
+    }
+
+    private List<Pair<Rational, List<Long>>> binomV3(long n) {
+        List<Pair<Rational, List<Long>>> res = new ArrayList<>();
+        res.add(Pair.of(Rational.valueOf(1, 1), List.of(n, 0L)));
+        for (long k = 1; k <= n - 1; k++) {
+            Rational left = Rational.valueOf(factorial(n - 1), factorial(k) * factorial(n - 1 - k)).plus(
+                Rational.valueOf(factorial(n - 1), factorial(k - 1) * factorial(n - k))
+            );
+            List<Long> right = List.of(n - k, k);
+            res.add(Pair.of(left, right));
+        }
+        res.add(Pair.of(Rational.valueOf(1, 1), List.of(0L, n)));
         return sort(res);
     }
 
