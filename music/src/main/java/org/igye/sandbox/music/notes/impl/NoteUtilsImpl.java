@@ -2,12 +2,17 @@ package org.igye.sandbox.music.notes.impl;
 
 import org.igye.sandbox.music.notes.NoteUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class NoteUtilsImpl implements NoteUtils {
     private static final int MAX_NOTE = 87;
+    private static final int numOfKeys = MAX_NOTE + 1;
     private static final Set<Integer> WHITE_KEYS_IN_OCTAVE = Set.of(0, 2, 4, 5, 7, 9, 11);
     private static final String[] IDX_WITHIN_OCTAVE_TO_NOTE_NAME =
         {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
@@ -49,6 +54,16 @@ public class NoteUtilsImpl implements NoteUtils {
     }
 
     @Override
+    public int numOfKeys() {
+        return numOfKeys;
+    }
+
+    @Override
+    public int numOfWhiteKeys() {
+        return numOfWhiteKeys;
+    }
+
+    @Override
     public boolean isWhiteKey(int note) {
         if (note == 0 || note == 2) {
             return true;
@@ -84,5 +99,10 @@ public class NoteUtilsImpl implements NoteUtils {
             throw new RuntimeException("note < 0 || MAX_NOTE < note");
         }
         return note;
+    }
+
+    @Override
+    public int noteToWhiteKeyIdx(int note) {
+        return noteToWhiteKeyIdx.get(note);
     }
 }
