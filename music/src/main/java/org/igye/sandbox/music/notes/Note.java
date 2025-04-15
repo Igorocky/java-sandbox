@@ -4,8 +4,8 @@ import org.igye.sandbox.music.notes.impl.NoteImpl;
 
 public interface Note {
 
-    static Note make(int whiteKeyIdx, KeySignature signature) {
-        return new NoteImpl(whiteKeyIdx, signature);
+    static Note make(int whiteKeyIdx, NoteAccidental accidental) {
+        return new NoteImpl(whiteKeyIdx, accidental);
     }
 
     int whiteKeyIdx();
@@ -14,11 +14,11 @@ public interface Note {
 
     Note withWhiteKeyIdx(int whiteKeyIdx);
 
-    KeySignature signature();
+    NoteAccidental accidental();
 
-    void setSignature(KeySignature signature);
+    void setAccidental(NoteAccidental accidental);
 
-    Note withSignature(KeySignature signature);
+    Note withAccidental(NoteAccidental accidental);
 
     Note copy();
 }

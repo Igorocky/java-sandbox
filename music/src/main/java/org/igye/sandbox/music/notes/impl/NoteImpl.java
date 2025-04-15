@@ -1,15 +1,15 @@
 package org.igye.sandbox.music.notes.impl;
 
-import org.igye.sandbox.music.notes.KeySignature;
 import org.igye.sandbox.music.notes.Note;
+import org.igye.sandbox.music.notes.NoteAccidental;
 
 public class NoteImpl implements Note {
     private int whiteKeyIdx;
-    private KeySignature signature;
+    private NoteAccidental accidental;
 
-    public NoteImpl(int whiteKeyIdx, KeySignature signature) {
+    public NoteImpl(int whiteKeyIdx, NoteAccidental accidental) {
         this.whiteKeyIdx = whiteKeyIdx;
-        this.signature = signature;
+        this.accidental = accidental;
     }
 
     @Override
@@ -30,24 +30,24 @@ public class NoteImpl implements Note {
     }
 
     @Override
-    public KeySignature signature() {
-        return signature;
+    public NoteAccidental accidental() {
+        return accidental;
     }
 
     @Override
-    public void setSignature(KeySignature signature) {
-        this.signature = signature;
+    public void setAccidental(NoteAccidental accidental) {
+        this.accidental = accidental;
     }
 
     @Override
-    public Note withSignature(KeySignature signature) {
+    public Note withAccidental(NoteAccidental accidental) {
         Note res = copy();
-        res.setSignature(signature);
+        res.setAccidental(accidental);
         return res;
     }
 
     @Override
     public Note copy() {
-        return new NoteImpl(whiteKeyIdx(), signature());
+        return new NoteImpl(whiteKeyIdx(), accidental());
     }
 }

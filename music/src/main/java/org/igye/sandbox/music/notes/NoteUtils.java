@@ -20,7 +20,7 @@ public interface NoteUtils {
 
     int blackKeyIdxToNote(int idx);
 
-    Note intToNote(int intNote, KeySignature signature);
+    Note intToNote(int intNote, NoteAccidental signature);
 
     void renderNotes(Graphics g, Rect rect, Clef clef, Collection<Note> notes);
 }

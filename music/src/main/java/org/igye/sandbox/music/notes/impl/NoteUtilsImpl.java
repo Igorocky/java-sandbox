@@ -1,8 +1,8 @@
 package org.igye.sandbox.music.notes.impl;
 
 import org.igye.sandbox.music.notes.Clef;
-import org.igye.sandbox.music.notes.KeySignature;
 import org.igye.sandbox.music.notes.Note;
+import org.igye.sandbox.music.notes.NoteAccidental;
 import org.igye.sandbox.music.notes.NoteUtils;
 import org.igye.sandbox.music.notes.Rect;
 
@@ -141,9 +141,9 @@ public class NoteUtilsImpl implements NoteUtils {
     }
 
     @Override
-    public Note intToNote(int intNote, KeySignature signature) {
+    public Note intToNote(int intNote, NoteAccidental signature) {
         if (isWhiteKey(intNote)) {
-            return Note.make(noteToWhiteKeyIdx(intNote), KeySignature.NONE);
+            return Note.make(noteToWhiteKeyIdx(intNote), NoteAccidental.NONE);
         } else {
             return switch (signature) {
                 case FLAT -> Note.make(noteToWhiteKeyIdx(intNote + 1), signature);

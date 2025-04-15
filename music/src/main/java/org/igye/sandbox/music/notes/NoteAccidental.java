@@ -1,5 +1,5 @@
 package org.igye.sandbox.music.notes;
 
-public enum KeySignature {
+public enum NoteAccidental {
     NONE, SHARP, FLAT
 }

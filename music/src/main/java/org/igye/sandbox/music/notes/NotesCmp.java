@@ -58,7 +58,7 @@ class NotesCmp extends JPanel {
         Rect rect = Rect.make(20, 20, 30, 40);
         for (Integer clickedNote : clickedNotes) {
             noteUtils.renderNotes(
-                g, rect, Clef.TREBLE, Collections.singletonList(noteUtils.intToNote(clickedNote, KeySignature.SHARP))
+                g, rect, Clef.TREBLE, Collections.singletonList(noteUtils.intToNote(clickedNote, NoteAccidental.SHARP))
             );
             rect.setLeft(rect.right());
         }
