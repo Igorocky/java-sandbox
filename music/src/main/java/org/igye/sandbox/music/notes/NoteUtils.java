@@ -1,5 +1,8 @@
 package org.igye.sandbox.music.notes;
 
+import java.awt.Graphics;
+import java.util.Collection;
+
 public interface NoteUtils {
     int numOfKeys();
 
@@ -13,4 +16,11 @@ public interface NoteUtils {
 
     int noteToWhiteKeyIdx(int note);
 
+    int whiteKeyIdxToNote(int idx);
+
+    int blackKeyIdxToNote(int idx);
+
+    Note intToNote(int intNote, KeySignature signature);
+
+    void renderNotes(Graphics g, Rect rect, Clef clef, Collection<Note> notes);
 }

@@ -33,6 +33,11 @@ public class RectImpl implements Rect {
     }
 
     @Override
+    public boolean includes(double x, double y) {
+        return left() <= x && x < right() && top() <= y && y < bottom();
+    }
+
+    @Override
     public double left() {
         return left;
     }

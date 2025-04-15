@@ -7,6 +7,8 @@ public interface Rect {
         return new RectImpl(left, top, width, height);
     }
 
+    boolean includes(double x, double y);
+
     double left();
 
     void setLeft(double left);

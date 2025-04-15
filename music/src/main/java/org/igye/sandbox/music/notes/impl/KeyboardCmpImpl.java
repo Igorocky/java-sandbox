@@ -69,4 +69,19 @@ public class KeyboardCmpImpl implements KeyboardCmp {
             (int) keyboardRect.left(), (int) keyboardRect.top(), (int) keyboardRect.width(), (int) keyboardRect.height()
         );
     }
+
+    @Override
+    public Integer getClickedNote(int x, int y) {
+        for (int i = 0; i < blackKeys.size(); i++) {
+            if (blackKeys.get(i).includes(x, y)) {
+                return noteUtils.blackKeyIdxToNote(i);
+            }
+        }
+        for (int i = 0; i < whiteKeys.size(); i++) {
+            if (whiteKeys.get(i).includes(x, y)) {
+                return noteUtils.whiteKeyIdxToNote(i);
+            }
+        }
+        return null;
+    }
 }

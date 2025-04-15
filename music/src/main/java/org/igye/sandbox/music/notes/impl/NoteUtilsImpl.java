@@ -1,14 +1,20 @@
 package org.igye.sandbox.music.notes.impl;
 
+import org.igye.sandbox.music.notes.Clef;
+import org.igye.sandbox.music.notes.KeySignature;
+import org.igye.sandbox.music.notes.Note;
 import org.igye.sandbox.music.notes.NoteUtils;
+import org.igye.sandbox.music.notes.Rect;
 
+import java.awt.Graphics;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class NoteUtilsImpl implements NoteUtils {
     private static final int MAX_NOTE = 87;
@@ -18,10 +24,13 @@ public class NoteUtilsImpl implements NoteUtils {
         {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     private final Map<String, Integer> noteNameToIdxWithinOctave;
-    private final Set<Integer> whiteKeys;
-    private final Set<Integer> blackKeys;
     private final int numOfWhiteKeys;
     private final Map<Integer, Integer> noteToWhiteKeyIdx;
+    private final Map<Integer, Integer> whiteKeyIdxToNote;
+    private final Map<Integer, Integer> noteToBlackKeyIdx;
+    private final Map<Integer, Integer> blackKeyIdxToNote;
+    private final int bassMiddleNoteWhiteKeyIdx;
+    private final int trebleMiddleNoteWhiteKeyIdx;
 
     public NoteUtilsImpl() {
         Map<String, Integer> noteNames = new HashMap<>();
@@ -36,21 +45,36 @@ public class NoteUtilsImpl implements NoteUtils {
         noteNames.put("Ab", noteNames.get("G#"));
         noteNames.put("Bb", noteNames.get("A#"));
         this.noteNameToIdxWithinOctave = Collections.unmodifiableMap(noteNames);
+
         Set<Integer> whiteKeys = new HashSet<>();
         Map<Integer, Integer> noteToWhiteKeyIdx = new HashMap<>();
-        for (int n = 0; n < MAX_NOTE + 1; n++) {
+        for (int n = 0; n <= MAX_NOTE; n++) {
             if (isWhiteKey(n)) {
                 whiteKeys.add(n);
                 noteToWhiteKeyIdx.put(n, noteToWhiteKeyIdx.size());
             }
         }
-        this.whiteKeys = Collections.unmodifiableSet(whiteKeys);
         this.noteToWhiteKeyIdx = Collections.unmodifiableMap(noteToWhiteKeyIdx);
+        this.whiteKeyIdxToNote = this.noteToWhiteKeyIdx.entrySet().stream().collect(Collectors.toMap(
+            Map.Entry::getValue, Map.Entry::getKey
+        ));
         numOfWhiteKeys = whiteKeys.size();
-        blackKeys = Stream.iterate(0, n -> n + 1)
-            .limit(MAX_NOTE + 1)
-            .filter(n -> !whiteKeys.contains(n))
-            .collect(Collectors.toSet());
+
+        Set<Integer> blackKeys = new HashSet<>();
+        Map<Integer, Integer> noteToBlackKeyIdx = new HashMap<>();
+        for (int n = 0; n <= MAX_NOTE; n++) {
+            if (!isWhiteKey(n)) {
+                blackKeys.add(n);
+                noteToBlackKeyIdx.put(n, noteToBlackKeyIdx.size());
+            }
+        }
+        this.noteToBlackKeyIdx = Collections.unmodifiableMap(noteToBlackKeyIdx);
+        this.blackKeyIdxToNote = this.noteToBlackKeyIdx.entrySet().stream().collect(Collectors.toMap(
+            Map.Entry::getValue, Map.Entry::getKey
+        ));
+
+        bassMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("3D"));
+        trebleMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("4B"));
     }
 
     @Override
@@ -104,5 +128,63 @@ public class NoteUtilsImpl implements NoteUtils {
     @Override
     public int noteToWhiteKeyIdx(int note) {
         return noteToWhiteKeyIdx.get(note);
+    }
+
+    @Override
+    public int whiteKeyIdxToNote(int idx) {
+        return whiteKeyIdxToNote.get(idx);
+    }
+
+    @Override
+    public int blackKeyIdxToNote(int idx) {
+        return blackKeyIdxToNote.get(idx);
+    }
+
+    @Override
+    public Note intToNote(int intNote, KeySignature signature) {
+        if (isWhiteKey(intNote)) {
+            return Note.make(noteToWhiteKeyIdx(intNote), KeySignature.NONE);
+        } else {
+            return switch (signature) {
+                case FLAT -> Note.make(noteToWhiteKeyIdx(intNote + 1), signature);
+                case SHARP -> Note.make(noteToWhiteKeyIdx(intNote - 1), signature);
+                case NONE -> throw new RuntimeException("signature == NONE");
+            };
+        }
+    }
+
+    @Override
+    public void renderNotes(Graphics g, Rect rect, Clef clef, Collection<Note> notes) {
+        Map<Integer, Note> levelToNote = notes.stream().collect(Collectors.toMap(
+            note -> note.whiteKeyIdx() - (clef == Clef.BASS ? bassMiddleNoteWhiteKeyIdx : trebleMiddleNoteWhiteKeyIdx),
+            Function.identity()
+        ));
+        double levelDy = rect.height() / 8;
+        double middleX = (rect.left() + rect.right()) / 2;
+        double shortWidth = levelDy * 4;
+        double halfShortWidth = shortWidth / 2;
+        int minLevel = Math.min(-4, levelToNote.keySet().stream().min(Integer::compareTo).orElse(0));
+        int maxLevel = Math.max(4, levelToNote.keySet().stream().max(Integer::compareTo).orElse(0));
+        Rect noteRect = Rect.make(0, 0, levelDy * 3, levelDy * 2);
+        noteRect.setMidX(middleX);
+        for (int level = minLevel; level <= maxLevel; level++) {
+            double levelY = rect.midY() - level * levelDy;
+            if (level % 2 == 0) {
+                if (-4 <= level && level <= 4) {
+                    g.drawLine((int) rect.left(), (int) levelY, (int) rect.right(), (int) levelY);
+                } else {
+                    g.drawLine(
+                        (int) (middleX - halfShortWidth), (int) levelY, (int) (middleX + halfShortWidth), (int) levelY
+                    );
+                }
+            }
+            Note curNote = levelToNote.get(level);
+            if (curNote != null) {
+                noteRect.setMidY(levelY);
+                g.fillOval(
+                    (int) noteRect.left(), (int) noteRect.top(), (int) noteRect.width(), (int) noteRect.height()
+                );
+            }
+        }
     }
 }
