@@ -55,7 +55,7 @@ class NotesCmp extends JPanel {
 
     private void renderClickedNotes(Graphics g) {
         g.setColor(Color.BLACK);
-        Rect rect = Rect.make(20, 20, 30, 40);
+        Rect rect = Rect.make(20, 20, 50, 40);
         for (Integer clickedNote : clickedNotes) {
             noteUtils.renderNotes(
                 g, rect, Clef.TREBLE, Collections.singletonList(noteUtils.intToNote(clickedNote, NoteAccidental.SHARP))

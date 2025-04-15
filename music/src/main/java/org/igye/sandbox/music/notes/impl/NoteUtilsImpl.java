@@ -6,7 +6,10 @@ import org.igye.sandbox.music.notes.NoteAccidental;
 import org.igye.sandbox.music.notes.NoteUtils;
 import org.igye.sandbox.music.notes.Rect;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -184,7 +187,70 @@ public class NoteUtilsImpl implements NoteUtils {
                 g.fillOval(
                     (int) noteRect.left(), (int) noteRect.top(), (int) noteRect.width(), (int) noteRect.height()
                 );
+                if (curNote.accidental() != NoteAccidental.NONE) {
+                    renderAccidental(g, noteRect, curNote.accidental());
+                }
             }
         }
+    }
+
+    private void renderAccidental(Graphics g, Rect noteRect, NoteAccidental accidental) {
+        switch (accidental) {
+            case NONE:
+                break;
+            case SHARP: {
+                Rect rect = noteRect.copy();
+                rect.setHeight(rect.height() * 1.5);
+                rect.setWidth(rect.width() * 0.7);
+                rect.setMidY(noteRect.midY());
+                rect.setRight(noteRect.left() - noteRect.width() * 0.15);
+                renderSharp(g, rect);
+                break;
+            }
+            case FLAT: {
+                Rect rect = noteRect.withRight(noteRect.left());
+                renderFlat(g, rect);
+                break;
+            }
+        }
+    }
+
+    private void renderSharp(Graphics g, Rect rect) {
+        Graphics2D g2d = (Graphics2D) g;
+        Stroke stroke = g2d.getStroke();
+        g2d.setStroke(new BasicStroke(2));
+        //vertical left
+        g.drawLine(
+            (int) (rect.left() + rect.width() * 0.3),
+            (int) (rect.top() + rect.height() * 0.1),
+            (int) (rect.left() + rect.width() * 0.3),
+            (int) rect.bottom()
+        );
+        //vertical right
+        g.drawLine(
+            (int) (rect.right() - rect.width() * 0.3),
+            (int) rect.top(),
+            (int) (rect.right() - rect.width() * 0.3),
+            (int) (rect.bottom() - rect.height() * 0.1)
+        );
+        //horizontal top
+        g.drawLine(
+            (int) rect.left(),
+            (int) (rect.top() + rect.height() * 0.4),
+            (int) rect.right(),
+            (int) (rect.top() + rect.height() * 0.2)
+        );
+        //horizontal bottom
+        g.drawLine(
+            (int) rect.left(),
+            (int) (rect.bottom() - rect.height() * 0.2),
+            (int) rect.right(),
+            (int) (rect.bottom() - rect.height() * 0.4)
+        );
+        g2d.setStroke(stroke);
+    }
+
+    private void renderFlat(Graphics g, Rect rect) {
+
     }
 }
