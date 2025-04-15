@@ -5,6 +5,7 @@ import org.igye.sandbox.music.notes.impl.KeyboardCmpImpl;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +26,6 @@ class NotesCmp extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 Integer clickedNote = keyboardCmp.getClickedNote(e.getX(), e.getY());
-                System.out.println("clickedNote=" + clickedNote);
                 if (clickedNote != null) {
                     clickedNotes.add(clickedNote);
                 }
@@ -44,16 +44,17 @@ class NotesCmp extends JPanel {
         g.setColor(new Color(150, 150, 150));
         g.fillRect(0, 0, (int) windowWidth, (int) windowHeight);
 
-        renderClickedNotes(g);
+        Graphics2D g2 = (Graphics2D) g;
+        renderClickedNotes(g2);
 
         double keyboardWidth = windowWidth * 0.9;
         double keyboardHeight = keyboardWidth * (15.0 / 122.5);
         Rect keyboardRect = Rect.make(0, 0, keyboardWidth, keyboardHeight);
         keyboardRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2));
-        keyboardCmp.render(g, keyboardRect);
+        keyboardCmp.render(g2, keyboardRect);
     }
 
-    private void renderClickedNotes(Graphics g) {
+    private void renderClickedNotes(Graphics2D g) {
         g.setColor(Color.BLACK);
         Rect rect = Rect.make(20, 20, 50, 40);
         for (Integer clickedNote : clickedNotes) {

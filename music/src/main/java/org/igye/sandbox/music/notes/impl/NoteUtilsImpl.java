@@ -1,15 +1,16 @@
 package org.igye.sandbox.music.notes.impl;
 
+import lombok.SneakyThrows;
 import org.igye.sandbox.music.notes.Clef;
 import org.igye.sandbox.music.notes.Note;
 import org.igye.sandbox.music.notes.NoteAccidental;
 import org.igye.sandbox.music.notes.NoteUtils;
 import org.igye.sandbox.music.notes.Rect;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics;
+import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +36,12 @@ public class NoteUtilsImpl implements NoteUtils {
     private final int bassMiddleNoteWhiteKeyIdx;
     private final int trebleMiddleNoteWhiteKeyIdx;
 
+    private final BufferedImage trebleClefImg;
+    private final BufferedImage bassClefImg;
+    private final BufferedImage sharpImg;
+    private final BufferedImage flatImg;
+
+    @SneakyThrows
     public NoteUtilsImpl() {
         Map<String, Integer> noteNames = new HashMap<>();
         for (int i = 0; i < IDX_WITHIN_OCTAVE_TO_NOTE_NAME.length; i++) {
@@ -78,6 +85,11 @@ public class NoteUtilsImpl implements NoteUtils {
 
         bassMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("3D"));
         trebleMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("4B"));
+
+        trebleClefImg = loadImage("/treble-clef.png");
+        bassClefImg = loadImage("/bass-clef.png");
+        sharpImg = loadImage("/sharp.png");
+        flatImg = loadImage("/flat.png");
     }
 
     @Override
@@ -157,7 +169,7 @@ public class NoteUtilsImpl implements NoteUtils {
     }
 
     @Override
-    public void renderNotes(Graphics g, Rect rect, Clef clef, Collection<Note> notes) {
+    public void renderNotes(Graphics2D g, Rect rect, Clef clef, Collection<Note> notes) {
         Map<Integer, Note> levelToNote = notes.stream().collect(Collectors.toMap(
             note -> note.whiteKeyIdx() - (clef == Clef.BASS ? bassMiddleNoteWhiteKeyIdx : trebleMiddleNoteWhiteKeyIdx),
             Function.identity()
@@ -194,63 +206,44 @@ public class NoteUtilsImpl implements NoteUtils {
         }
     }
 
-    private void renderAccidental(Graphics g, Rect noteRect, NoteAccidental accidental) {
+    private void renderAccidental(Graphics2D g, Rect noteRect, NoteAccidental accidental) {
         switch (accidental) {
             case NONE:
                 break;
             case SHARP: {
                 Rect rect = noteRect.copy();
                 rect.setHeight(rect.height() * 1.5);
-                rect.setWidth(rect.width() * 0.7);
+                rect.setWidth(rect.height() * 198.0 / 256.0);
                 rect.setMidY(noteRect.midY());
                 rect.setRight(noteRect.left() - noteRect.width() * 0.15);
-                renderSharp(g, rect);
+                renderImg(g, sharpImg, rect);
                 break;
             }
             case FLAT: {
-                Rect rect = noteRect.withRight(noteRect.left());
-                renderFlat(g, rect);
+                Rect rect = noteRect.copy();
+                rect.setHeight(rect.height() * 2);
+                rect.setWidth(rect.height() * 812.0 / 1447.0);
+                rect.setMidY(noteRect.midY());
+                rect.setRight(noteRect.left() - noteRect.width() * 0.15);
+                renderImg(g, flatImg, rect);
                 break;
             }
         }
     }
 
-    private void renderSharp(Graphics g, Rect rect) {
-        Graphics2D g2d = (Graphics2D) g;
-        Stroke stroke = g2d.getStroke();
-        g2d.setStroke(new BasicStroke(2));
-        //vertical left
-        g.drawLine(
-            (int) (rect.left() + rect.width() * 0.3),
-            (int) (rect.top() + rect.height() * 0.1),
-            (int) (rect.left() + rect.width() * 0.3),
-            (int) rect.bottom()
+    private void renderImg(Graphics2D g, BufferedImage img, Rect rect) {
+        g.drawImage(
+            img,
+            (int) rect.left(), (int) rect.top(), (int) rect.right(), (int) rect.bottom(),
+            0, 0, img.getWidth(), img.getHeight(),
+            null
         );
-        //vertical right
-        g.drawLine(
-            (int) (rect.right() - rect.width() * 0.3),
-            (int) rect.top(),
-            (int) (rect.right() - rect.width() * 0.3),
-            (int) (rect.bottom() - rect.height() * 0.1)
-        );
-        //horizontal top
-        g.drawLine(
-            (int) rect.left(),
-            (int) (rect.top() + rect.height() * 0.4),
-            (int) rect.right(),
-            (int) (rect.top() + rect.height() * 0.2)
-        );
-        //horizontal bottom
-        g.drawLine(
-            (int) rect.left(),
-            (int) (rect.bottom() - rect.height() * 0.2),
-            (int) rect.right(),
-            (int) (rect.bottom() - rect.height() * 0.4)
-        );
-        g2d.setStroke(stroke);
     }
 
-    private void renderFlat(Graphics g, Rect rect) {
-
+    @SneakyThrows
+    private BufferedImage loadImage(String path) {
+        try (InputStream is = NoteUtilsImpl.class.getResourceAsStream(path)) {
+            return ImageIO.read(is);
+        }
     }
 }

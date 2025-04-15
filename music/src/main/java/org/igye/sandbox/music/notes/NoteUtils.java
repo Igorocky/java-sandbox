@@ -1,6 +1,6 @@
 package org.igye.sandbox.music.notes;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Collection;
 
 public interface NoteUtils {
@@ -22,5 +22,5 @@ public interface NoteUtils {
 
     Note intToNote(int intNote, NoteAccidental signature);
 
-    void renderNotes(Graphics g, Rect rect, Clef clef, Collection<Note> notes);
+    void renderNotes(Graphics2D g, Rect rect, Clef clef, Collection<Note> notes);
 }
