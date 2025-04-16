@@ -22,44 +22,21 @@ class NotesCmp extends JPanel {
     private final KeyboardCmp keyboardCmp;
     private final List<Integer> clickedNotes = new ArrayList<>();
 
-    private final List<Pair<Clef, Integer>> notesToRepeat;
+    private final List<Pair<Clef, Integer>> notesToRepeat = new ArrayList<>();
     private boolean lastClickedNoteIsCorrect = true;
     private final Map<Clef, Map<Integer, Integer>> noteCounts;
-    private final Map<Clef, Map<Integer, Integer>> noteTotalCounts;
 
     public NotesCmp(NoteUtils noteUtils) {
         this.noteUtils = noteUtils;
         keyboardCmp = new KeyboardCmpImpl(noteUtils);
 
+        prepareNotesToRepeat();
         noteCounts = new EnumMap<>(Clef.class);
         noteCounts.put(Clef.BASS, new HashMap<>());
         noteCounts.put(Clef.TREBLE, new HashMap<>());
-
-        noteTotalCounts = new EnumMap<>(Clef.class);
-        noteTotalCounts.put(Clef.BASS, new HashMap<>());
-        noteTotalCounts.put(Clef.TREBLE, new HashMap<>());
-
-        notesToRepeat = new ArrayList<>();
-        int bassFirstNote = noteUtils.strToNote("1D");
-        int bassLastNote = noteUtils.strToNote("5D");
-        int trebleFirstNote = noteUtils.strToNote("2B");
-        int trebleLastNote = noteUtils.strToNote("6B");
-        for (int i = bassFirstNote; i <= bassLastNote; i++) {
-            if (noteUtils.isWhiteKey(i)) {
-                notesToRepeat.add(Pair.of(Clef.BASS, i));
-                noteCounts.get(Clef.BASS).put(i, 0);
-                noteTotalCounts.get(Clef.BASS).put(i, 0);
-            }
+        for (Pair<Clef, Integer> clefAndNote : notesToRepeat) {
+            resetCount(noteCounts, clefAndNote.getLeft(), clefAndNote.getRight());
         }
-        for (int i = trebleFirstNote; i <= trebleLastNote; i++) {
-            if (noteUtils.isWhiteKey(i)) {
-                notesToRepeat.add(Pair.of(Clef.TREBLE, i));
-                noteCounts.get(Clef.TREBLE).put(i, 0);
-                noteTotalCounts.get(Clef.TREBLE).put(i, 0);
-            }
-        }
-        Collections.shuffle(notesToRepeat);
-
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -98,25 +75,37 @@ class NotesCmp extends JPanel {
         renderCurNote(g2, staffRect);
     }
 
+    private void prepareNotesToRepeat() {
+        int bassFirstNote = noteUtils.strToNote("1D");
+        int bassLastNote = noteUtils.strToNote("5D");
+        int trebleFirstNote = noteUtils.strToNote("2B");
+        int trebleLastNote = noteUtils.strToNote("6B");
+        notesToRepeat.clear();
+        for (int i = bassFirstNote; i <= bassLastNote; i++) {
+            if (noteUtils.isWhiteKey(i)) {
+                notesToRepeat.add(Pair.of(Clef.BASS, i));
+            }
+        }
+        for (int i = trebleFirstNote; i <= trebleLastNote; i++) {
+            if (noteUtils.isWhiteKey(i)) {
+                notesToRepeat.add(Pair.of(Clef.TREBLE, i));
+            }
+        }
+        Collections.shuffle(notesToRepeat);
+    }
+
     private void processClickedNote(int clickedNote) {
-        Pair<Clef, Integer> curClefAndNote = notesToRepeat.get(0);
+        Pair<Clef, Integer> curClefAndNote = notesToRepeat.getFirst();
         Clef curClef = curClefAndNote.getLeft();
         int curNote = curClefAndNote.getRight();
         if (curNote != clickedNote) {
             lastClickedNoteIsCorrect = false;
-            resetCount(noteCounts, curClef, curNote);
         } else {
             lastClickedNoteIsCorrect = true;
             incCount(noteCounts, curClef, curNote);
-            incCount(noteTotalCounts, curClef, curNote);
             notesToRepeat.removeFirst();
-            int correctAnsCnt = getCount(noteTotalCounts, curClef, curNote);
-            if (correctAnsCnt == 1) {
-                notesToRepeat.add(6, curClefAndNote);
-            } else if (correctAnsCnt == 2) {
-                notesToRepeat.add(19, curClefAndNote);
-            } else {
-                notesToRepeat.add(curClefAndNote);
+            if (notesToRepeat.isEmpty()) {
+                prepareNotesToRepeat();
             }
         }
         repaint();
@@ -138,16 +127,26 @@ class NotesCmp extends JPanel {
 
     private void printTotalCounts() {
         System.out.println("------------------------------------------------------------------------------");
-        printCounts("Total counts", noteTotalCounts);
+        printCounts("Note counts", noteCounts);
         System.out.println("------------------------------------------------------------------------------");
 
     }
 
     private void printCounts(String title, Map<Clef, Map<Integer, Integer>> counts) {
         System.out.println(title + ":");
-        printCountsForClef(Clef.BASS, counts.get(Clef.BASS));
-        printCountsForClef(Clef.TREBLE, counts.get(Clef.TREBLE));
-
+        Map<Integer, Integer> bassCounts = counts.get(Clef.BASS);
+        Map<Integer, Integer> trebleCounts = counts.get(Clef.TREBLE);
+        printCountsForClef(Clef.BASS, bassCounts);
+        printCountsForClef(Clef.TREBLE, trebleCounts);
+        int minCnt = Math.min(
+            bassCounts.values().stream().min(Integer::compareTo).orElse(0),
+            trebleCounts.values().stream().min(Integer::compareTo).orElse(0)
+        );
+        int maxCnt = Math.max(
+            bassCounts.values().stream().max(Integer::compareTo).orElse(0),
+            trebleCounts.values().stream().max(Integer::compareTo).orElse(0)
+        );
+        System.out.printf("minCnt: %s, maxCnt: %s%n", minCnt, maxCnt);
     }
 
     private void printCountsForClef(Clef clef, Map<Integer, Integer> counts) {
