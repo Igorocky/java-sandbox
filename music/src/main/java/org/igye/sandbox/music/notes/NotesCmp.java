@@ -20,7 +20,6 @@ import java.util.Map;
 class NotesCmp extends JPanel {
     private final NoteUtils noteUtils;
     private final KeyboardCmp keyboardCmp;
-    private final List<Integer> clickedNotes = new ArrayList<>();
 
     private final List<Pair<Clef, Integer>> notesToRepeat = new ArrayList<>();
     private boolean lastClickedNoteIsCorrect = true;
