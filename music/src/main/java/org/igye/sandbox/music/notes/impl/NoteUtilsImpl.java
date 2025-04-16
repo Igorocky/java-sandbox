@@ -11,10 +11,10 @@ import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -169,7 +169,17 @@ public class NoteUtilsImpl implements NoteUtils {
     }
 
     @Override
-    public void renderNotes(Graphics2D g, Rect rect, Clef clef, Collection<Note> notes) {
+    public void renderStaff(Graphics2D g, Rect rect, Clef clef, List<List<Note>> notes) {
+        renderVerticalNoteGrp(g, rect, clef, Collections.emptyList());
+        renderClef(g, rect, clef);
+        rect.setLeft(rect.right());
+        for (List<Note> verticalNoteGrp : notes) {
+            renderVerticalNoteGrp(g, rect, clef, verticalNoteGrp);
+            rect.setLeft(rect.right());
+        }
+    }
+
+    public void renderVerticalNoteGrp(Graphics2D g, Rect rect, Clef clef, List<Note> notes) {
         Map<Integer, Note> levelToNote = notes.stream().collect(Collectors.toMap(
             note -> note.whiteKeyIdx() - (clef == Clef.BASS ? bassMiddleNoteWhiteKeyIdx : trebleMiddleNoteWhiteKeyIdx),
             Function.identity()
@@ -202,6 +212,27 @@ public class NoteUtilsImpl implements NoteUtils {
                 if (curNote.accidental() != NoteAccidental.NONE) {
                     renderAccidental(g, noteRect, curNote.accidental());
                 }
+            }
+        }
+    }
+
+    private void renderClef(Graphics2D g, Rect noteRect, Clef clef) {
+        switch (clef) {
+            case BASS: {
+                Rect rect = noteRect.copy();
+                rect.setHeight(rect.height() * 0.85);
+                rect.setWidth(rect.height() * 622.0 / 720.0);
+                rect.setTop(rect.top() - rect.height() * 0.02);
+                renderImg(g, bassClefImg, rect);
+                break;
+            }
+            case TREBLE: {
+                Rect rect = noteRect.copy();
+                rect.setHeight(rect.height() * 1.8);
+                rect.setWidth(rect.height() * 274.0 / 724.0);
+                rect.setTop(rect.top() - rect.height() * 0.2);
+                renderImg(g, trebleClefImg, rect);
+                break;
             }
         }
     }

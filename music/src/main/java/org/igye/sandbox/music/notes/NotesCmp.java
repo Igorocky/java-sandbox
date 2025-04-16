@@ -55,14 +55,12 @@ class NotesCmp extends JPanel {
     }
 
     private void renderClickedNotes(Graphics2D g) {
+        double scaleFactor = 1.5;
+        Rect rect = Rect.make(20, 50, 50 * scaleFactor, 40 * scaleFactor);
+        List<List<Note>> notesToRender = clickedNotes.stream()
+            .map(n -> Collections.singletonList(noteUtils.intToNote(n, NoteAccidental.SHARP)))
+            .toList();
         g.setColor(Color.BLACK);
-        Rect rect = Rect.make(20, 20, 50, 40);
-        for (Integer clickedNote : clickedNotes) {
-            noteUtils.renderNotes(
-                g, rect, Clef.TREBLE, Collections.singletonList(noteUtils.intToNote(clickedNote, NoteAccidental.SHARP))
-            );
-            rect.setLeft(rect.right());
-        }
-
+        noteUtils.renderStaff(g, rect, Clef.TREBLE, notesToRender);
     }
 }
