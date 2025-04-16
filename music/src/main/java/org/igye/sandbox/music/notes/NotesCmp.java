@@ -66,11 +66,12 @@ class NotesCmp extends JPanel {
         keyboardRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2 + windowHeight * 0.15));
         keyboardCmp.render(g2, keyboardRect);
 
+        int numOfNotes = 1;
         double staffWidth = keyboardWidth * 0.1;
-        double staffHeight = staffWidth / 2 * 0.7;
+        double staffHeight = staffWidth / (numOfNotes + 1) * 0.7;
         Rect staffRect = Rect.make(0, 0, staffWidth, staffHeight);
         staffRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2 - windowHeight * 0.2));
-        staffRect.setWidth(staffRect.width() / 2);
+        staffRect.setWidth(staffRect.width() / (numOfNotes + 1));
         renderCurNote(g2, staffRect);
     }
 

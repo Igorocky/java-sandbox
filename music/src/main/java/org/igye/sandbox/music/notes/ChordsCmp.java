@@ -15,19 +15,26 @@ import java.util.stream.Stream;
 class ChordsCmp extends JPanel {
     private final NoteUtils noteUtils;
     private final Random rand = new Random();
+    private final ChordNotesCmp chordNotesCmp;
+    private final JTextField ansField;
 
     private Clef curClef;
     private List<Note> curNotes;
     private Optional<String> curChord;
+    private boolean lastAnsIsCorrect = true;
 
     public ChordsCmp(NoteUtils noteUtils) {
         this.noteUtils = noteUtils;
-        JTextField ansField = new JTextField(10);
+        ansField = new JTextField(10);
         this.setLayout(new BorderLayout());
-        this.add(new ChordNotesCmp(noteUtils), BorderLayout.CENTER);
+        chordNotesCmp = new ChordNotesCmp(noteUtils);
+        this.add(chordNotesCmp, BorderLayout.CENTER);
         this.add(ansField, BorderLayout.PAGE_END);
 
-        ansField.addActionListener(e -> this.onAnswer());
+        ansField.addActionListener(_ -> this.onAnswer());
+
+        generateNextChord();
+        chordNotesCmp.setCurNotes(curClef, curNotes, lastAnsIsCorrect);
     }
 
     private void generateNextChord() {
@@ -66,9 +73,16 @@ class ChordsCmp extends JPanel {
     }
 
     private void onAnswer() {
-//        String ans = ansField.getText();
-//        System.out.println(ans);
-//        ansField.setText("");
+        String ans = ansField.getText();
+        if (!curChord.orElse("").equals(ans)) {
+            lastAnsIsCorrect = false;
+        } else {
+            lastAnsIsCorrect = true;
+            ansField.setText("");
+            generateNextChord();
+        }
+        chordNotesCmp.setCurNotes(curClef, curNotes, lastAnsIsCorrect);
+        repaint();
     }
 
     public static void main(String[] args) {

@@ -27,8 +27,8 @@ public class NotesMain {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Notes", new NotesCmp(noteUtils));
         tabbedPane.addTab("Chords", new ChordsCmp(noteUtils));
+        tabbedPane.addTab("Notes", new NotesCmp(noteUtils));
 
         f.add(tabbedPane);
 //        f.pack();
