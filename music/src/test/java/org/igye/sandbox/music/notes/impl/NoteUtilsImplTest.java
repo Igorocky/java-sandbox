@@ -4,6 +4,9 @@ import org.igye.sandbox.music.notes.NoteUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Optional;
+
 class NoteUtilsImplTest {
     private final NoteUtils noteUtils = new NoteUtilsImpl();
 
@@ -26,6 +29,25 @@ class NoteUtilsImplTest {
         Assertions.assertEquals(3, noteUtils.strToNote("1C"));
         Assertions.assertEquals(10, noteUtils.strToNote("1G"));
         Assertions.assertEquals(15, noteUtils.strToNote("2C"));
+    }
+
+    @Test
+    void triadToStr() {
+        int base = noteUtils.strToNote("4C");
+        Assertions.assertEquals(Optional.of("C"), noteUtils.triadToStr(List.of(base, base + 4, base + 7)));
+        Assertions.assertEquals(Optional.of("Cm"), noteUtils.triadToStr(List.of(base, base + 3, base + 7)));
+
+        base = noteUtils.strToNote("4C");
+        Assertions.assertEquals(Optional.of("C"), noteUtils.triadToStr(List.of(base, base + 4 - 24, base + 7 - 12)));
+        Assertions.assertEquals(Optional.of("Cm"), noteUtils.triadToStr(List.of(base, base + 3 + 12, base + 7 - 24)));
+
+        base = noteUtils.strToNote("5F#");
+        Assertions.assertEquals(Optional.of("F#"), noteUtils.triadToStr(List.of(base, base + 4, base + 7)));
+        Assertions.assertEquals(Optional.of("F#m"), noteUtils.triadToStr(List.of(base, base + 3, base + 7)));
+
+        base = noteUtils.strToNote("5F#");
+        Assertions.assertEquals(Optional.of("F#"), noteUtils.triadToStr(List.of(base, base + 4 - 24, base + 7 - 12)));
+        Assertions.assertEquals(Optional.of("F#m"), noteUtils.triadToStr(List.of(base, base + 3 + 12, base + 7 - 24)));
     }
 
 }

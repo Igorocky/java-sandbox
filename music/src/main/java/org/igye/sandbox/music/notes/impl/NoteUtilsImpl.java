@@ -11,14 +11,18 @@ import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NoteUtilsImpl implements NoteUtils {
     private static final int MAX_NOTE = 87;
@@ -26,6 +30,7 @@ public class NoteUtilsImpl implements NoteUtils {
     private static final Set<Integer> WHITE_KEYS_IN_OCTAVE = Set.of(0, 2, 4, 5, 7, 9, 11);
     private static final String[] IDX_WITHIN_OCTAVE_TO_NOTE_NAME =
         {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    private static final Pattern TRIAD_PAT = Pattern.compile("^([ABCDEFG])([#b]?)(m?)$");
 
     private final Map<String, Integer> noteNameToIdxWithinOctave;
     private final int numOfWhiteKeys;
@@ -35,6 +40,7 @@ public class NoteUtilsImpl implements NoteUtils {
     private final Map<Integer, Integer> blackKeyIdxToNote;
     private final int bassMiddleNoteWhiteKeyIdx;
     private final int trebleMiddleNoteWhiteKeyIdx;
+    private final List<Integer> octaveFirstNotes;
 
     private final BufferedImage trebleClefImg;
     private final BufferedImage bassClefImg;
@@ -85,6 +91,8 @@ public class NoteUtilsImpl implements NoteUtils {
 
         bassMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("3D"));
         trebleMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("4B"));
+
+        octaveFirstNotes = Stream.iterate(strToNote("1C") - 12, n -> n + 12).limit(8).toList();
 
         trebleClefImg = loadImage("/treble-clef.png");
         bassClefImg = loadImage("/bass-clef.png");
@@ -166,6 +174,38 @@ public class NoteUtilsImpl implements NoteUtils {
                 case NONE -> throw new RuntimeException("signature == NONE");
             };
         }
+    }
+
+    @Override
+    public Optional<String> triadToStr(List<Integer> notes) {
+        if (notes.size() != 3) {
+            return Optional.empty();
+        }
+        Integer minNote = octaveFirstNotes.getFirst();
+        int shift = -minNote;
+        List<Integer> normalizedNodes = new ArrayList<>(
+            notes.stream().map(n -> (n + shift) % 12).sorted().toList()
+        );
+
+        int cnt = 2;
+        while (normalizedNodes.getLast() - normalizedNodes.getFirst() != 7 && cnt > 0) {
+            normalizedNodes.add(normalizedNodes.getFirst() + 12);
+            normalizedNodes.removeFirst();
+            cnt--;
+        }
+        int d1 = normalizedNodes.get(1) - normalizedNodes.get(0);
+        if (normalizedNodes.getLast() - normalizedNodes.getFirst() != 7 || (d1 != 3 && d1 != 4)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            IDX_WITHIN_OCTAVE_TO_NOTE_NAME[normalizedNodes.getFirst() % 12] + (d1 == 3 ? "m" : "")
+        );
+    }
+
+    @Override
+    public List<Integer> strToTriad(String triadStr, int baseOctave) {
+        return List.of();
     }
 
     @Override
