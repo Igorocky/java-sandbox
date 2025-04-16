@@ -25,7 +25,7 @@ public interface NoteUtils {
 
     Optional<String> triadToStr(List<Integer> notes);
 
-    List<Integer> strToTriad(String triadStr, int baseOctave);
+    Optional<List<Integer>> strToTriad(String triadStr, int baseOctave);
 
     void renderStaff(Graphics2D g, Rect rect, Clef clef, List<List<Note>> notes);
 }

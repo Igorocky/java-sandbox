@@ -1,6 +1,7 @@
 package org.igye.sandbox.music.notes.impl;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.igye.sandbox.music.notes.Clef;
 import org.igye.sandbox.music.notes.Note;
 import org.igye.sandbox.music.notes.NoteAccidental;
@@ -20,9 +21,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class NoteUtilsImpl implements NoteUtils {
     private static final int MAX_NOTE = 87;
@@ -30,7 +31,8 @@ public class NoteUtilsImpl implements NoteUtils {
     private static final Set<Integer> WHITE_KEYS_IN_OCTAVE = Set.of(0, 2, 4, 5, 7, 9, 11);
     private static final String[] IDX_WITHIN_OCTAVE_TO_NOTE_NAME =
         {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-    private static final Pattern TRIAD_PAT = Pattern.compile("^([ABCDEFG])([#b]?)(m?)$");
+    private static final Pattern TRIAD_PAT = Pattern.compile("^([ABCDEFG][#b]?)(m?)$");
+    private static final int OCTAVE_SHIFT = 9;
 
     private final Map<String, Integer> noteNameToIdxWithinOctave;
     private final int numOfWhiteKeys;
@@ -40,7 +42,6 @@ public class NoteUtilsImpl implements NoteUtils {
     private final Map<Integer, Integer> blackKeyIdxToNote;
     private final int bassMiddleNoteWhiteKeyIdx;
     private final int trebleMiddleNoteWhiteKeyIdx;
-    private final List<Integer> octaveFirstNotes;
 
     private final BufferedImage trebleClefImg;
     private final BufferedImage bassClefImg;
@@ -49,18 +50,7 @@ public class NoteUtilsImpl implements NoteUtils {
 
     @SneakyThrows
     public NoteUtilsImpl() {
-        Map<String, Integer> noteNames = new HashMap<>();
-        for (int i = 0; i < IDX_WITHIN_OCTAVE_TO_NOTE_NAME.length; i++) {
-            noteNames.put(IDX_WITHIN_OCTAVE_TO_NOTE_NAME[i], i);
-        }
-        noteNames.put("Cb", noteNames.get("B"));
-        noteNames.put("Db", noteNames.get("C#"));
-        noteNames.put("Eb", noteNames.get("D#"));
-        noteNames.put("Fb", noteNames.get("E"));
-        noteNames.put("Gb", noteNames.get("F#"));
-        noteNames.put("Ab", noteNames.get("G#"));
-        noteNames.put("Bb", noteNames.get("A#"));
-        this.noteNameToIdxWithinOctave = Collections.unmodifiableMap(noteNames);
+        this.noteNameToIdxWithinOctave = getNoteNameToIdxWithinOctave();
 
         Set<Integer> whiteKeys = new HashSet<>();
         Map<Integer, Integer> noteToWhiteKeyIdx = new HashMap<>();
@@ -91,8 +81,6 @@ public class NoteUtilsImpl implements NoteUtils {
 
         bassMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("3D"));
         trebleMiddleNoteWhiteKeyIdx = noteToWhiteKeyIdx(strToNote("4B"));
-
-        octaveFirstNotes = Stream.iterate(strToNote("1C") - 12, n -> n + 12).limit(8).toList();
 
         trebleClefImg = loadImage("/treble-clef.png");
         bassClefImg = loadImage("/bass-clef.png");
@@ -181,10 +169,8 @@ public class NoteUtilsImpl implements NoteUtils {
         if (notes.size() != 3) {
             return Optional.empty();
         }
-        Integer minNote = octaveFirstNotes.getFirst();
-        int shift = -minNote;
         List<Integer> normalizedNodes = new ArrayList<>(
-            notes.stream().map(n -> (n + shift) % 12).sorted().toList()
+            notes.stream().map(n -> (n + OCTAVE_SHIFT) % 12).sorted().toList()
         );
 
         int cnt = 2;
@@ -204,8 +190,18 @@ public class NoteUtilsImpl implements NoteUtils {
     }
 
     @Override
-    public List<Integer> strToTriad(String triadStr, int baseOctave) {
-        return List.of();
+    public Optional<List<Integer>> strToTriad(String triadStr, int baseOctave) {
+        Matcher matcher = TRIAD_PAT.matcher(StringUtils.defaultIfBlank(triadStr, "").trim());
+        if (!matcher.matches()) {
+            return Optional.empty();
+        }
+        Integer base = noteNameToIdxWithinOctave.get(matcher.group(1));
+        if (base == null) {
+            return Optional.empty();
+        }
+        boolean isMinor = "m".equals(matcher.group(2));
+        int resBase = (base - OCTAVE_SHIFT) + baseOctave * 12;
+        return Optional.of(List.of(resBase, resBase + (isMinor ? 3 : 4), resBase + 7));
     }
 
     @Override
@@ -316,5 +312,22 @@ public class NoteUtilsImpl implements NoteUtils {
         try (InputStream is = NoteUtilsImpl.class.getResourceAsStream(path)) {
             return ImageIO.read(is);
         }
+    }
+
+    private static Map<String, Integer> getNoteNameToIdxWithinOctave() {
+        Map<String, Integer> noteNameToIdxWithinOctave = new HashMap<>();
+        for (int i = 0; i < IDX_WITHIN_OCTAVE_TO_NOTE_NAME.length; i++) {
+            noteNameToIdxWithinOctave.put(IDX_WITHIN_OCTAVE_TO_NOTE_NAME[i], i);
+        }
+        noteNameToIdxWithinOctave.put("E#", noteNameToIdxWithinOctave.get("F"));
+        noteNameToIdxWithinOctave.put("B#", noteNameToIdxWithinOctave.get("C"));
+        noteNameToIdxWithinOctave.put("Cb", noteNameToIdxWithinOctave.get("B"));
+        noteNameToIdxWithinOctave.put("Db", noteNameToIdxWithinOctave.get("C#"));
+        noteNameToIdxWithinOctave.put("Eb", noteNameToIdxWithinOctave.get("D#"));
+        noteNameToIdxWithinOctave.put("Fb", noteNameToIdxWithinOctave.get("E"));
+        noteNameToIdxWithinOctave.put("Gb", noteNameToIdxWithinOctave.get("F#"));
+        noteNameToIdxWithinOctave.put("Ab", noteNameToIdxWithinOctave.get("G#"));
+        noteNameToIdxWithinOctave.put("Bb", noteNameToIdxWithinOctave.get("A#"));
+        return Collections.unmodifiableMap(noteNameToIdxWithinOctave);
     }
 }

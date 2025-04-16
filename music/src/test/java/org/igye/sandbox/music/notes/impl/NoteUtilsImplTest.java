@@ -50,4 +50,27 @@ class NoteUtilsImplTest {
         Assertions.assertEquals(Optional.of("F#m"), noteUtils.triadToStr(List.of(base, base + 3 + 12, base + 7 - 24)));
     }
 
+    @Test
+    void strToTriad() {
+        int n1 = noteUtils.strToNote("4C");
+        int n2 = noteUtils.strToNote("4E");
+        int n3 = noteUtils.strToNote("4G");
+        Assertions.assertEquals(Optional.of(List.of(n1, n2, n3)), noteUtils.strToTriad("C", 4));
+
+        n1 = noteUtils.strToNote("4C");
+        n2 = noteUtils.strToNote("4Eb");
+        n3 = noteUtils.strToNote("4G");
+        Assertions.assertEquals(Optional.of(List.of(n1, n2, n3)), noteUtils.strToTriad("Cm", 4));
+
+        n1 = noteUtils.strToNote("3G#");
+        n2 = noteUtils.strToNote("4C");
+        n3 = noteUtils.strToNote("4D#");
+        Assertions.assertEquals(Optional.of(List.of(n1, n2, n3)), noteUtils.strToTriad("G#", 3));
+
+        n1 = noteUtils.strToNote("3G#");
+        n2 = noteUtils.strToNote("3B");
+        n3 = noteUtils.strToNote("4D#");
+        Assertions.assertEquals(Optional.of(List.of(n1, n2, n3)), noteUtils.strToTriad("G#m", 3));
+    }
+
 }
