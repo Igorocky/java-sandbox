@@ -83,13 +83,19 @@ class NotesCmp extends JPanel {
         g.fillRect(0, 0, (int) windowWidth, (int) windowHeight);
 
         Graphics2D g2 = (Graphics2D) g;
-        renderCurNote(g2);
 
         double keyboardWidth = windowWidth * 0.9;
         double keyboardHeight = keyboardWidth * (15.0 / 122.5);
         Rect keyboardRect = Rect.make(0, 0, keyboardWidth, keyboardHeight);
-        keyboardRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2));
+        keyboardRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2 + windowHeight * 0.15));
         keyboardCmp.render(g2, keyboardRect);
+
+        double staffWidth = keyboardWidth * 0.1;
+        double staffHeight = staffWidth / 2 * 0.7;
+        Rect staffRect = Rect.make(0, 0, staffWidth, staffHeight);
+        staffRect.setMidMid(Point.make(windowWidth / 2, windowHeight / 2 - windowHeight * 0.2));
+        staffRect.setWidth(staffRect.width() / 2);
+        renderCurNote(g2, staffRect);
     }
 
     private void processClickedNote(int clickedNote) {
@@ -155,22 +161,10 @@ class NotesCmp extends JPanel {
             );
     }
 
-    private void renderClickedNotes(Graphics2D g) {
-        double scaleFactor = 1.5;
-        Rect rect = Rect.make(20, 50, 50 * scaleFactor, 40 * scaleFactor);
-        List<List<Note>> notesToRender = clickedNotes.stream()
-            .map(n -> Collections.singletonList(noteUtils.intToNote(n, NoteAccidental.SHARP)))
-            .toList();
-        g.setColor(Color.BLACK);
-        noteUtils.renderStaff(g, rect, Clef.TREBLE, notesToRender);
-    }
-
-    private void renderCurNote(Graphics2D g) {
+    private void renderCurNote(Graphics2D g, Rect rect) {
         Pair<Clef, Integer> curClefAndNote = notesToRepeat.get(0);
         Clef curClef = curClefAndNote.getLeft();
         int curNote = curClefAndNote.getRight();
-        double scaleFactor = 1.5;
-        Rect rect = Rect.make(20, 200, 50 * scaleFactor, 40 * scaleFactor);
         if (lastClickedNoteIsCorrect) {
             g.setColor(Color.BLACK);
         } else {
