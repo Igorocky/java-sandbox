@@ -73,7 +73,9 @@ class ChordsCmp extends JPanel {
     }
 
     private void onAnswer() {
-        String ans = ansField.getText();
+        String ans = noteUtils.strToTriad(ansField.getText(), 4)
+            .flatMap(noteUtils::triadToStr)
+            .orElse(ansField.getText());
         if (!curChord.orElse("").equals(ans)) {
             lastAnsIsCorrect = false;
         } else {
