@@ -5,6 +5,8 @@ import org.igye.sandbox.music.notes.impl.NoteUtilsImpl;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,11 @@ class ChordsCmp extends JPanel {
     private List<Note> curNotes;
     private Optional<String> curChord;
     private boolean lastAnsIsCorrect = true;
+    private List<List<Integer>> nonTriads = List.of(
+        List.of(3, 3),
+        List.of(3, 6),
+        List.of(4, 4)
+    );
 
     public ChordsCmp(NoteUtils noteUtils) {
         this.noteUtils = noteUtils;
@@ -49,13 +56,10 @@ class ChordsCmp extends JPanel {
             n2 = n1 + (rand.nextBoolean() ? 4 : 3);
             n3 = n1 + 7;
         } else {
-            if (rand.nextBoolean()) {
-                n2 = n1 + (rand.nextBoolean() ? 4 : 3);
-                n3 = n1 + 6;
-            } else {
-                n2 = n1 + 5;
-                n3 = n1 + 7;
-            }
+            List<Integer> nonTriad = nonTriads.get(rand.nextInt(nonTriads.size()));
+            int idx = rand.nextInt(2);
+            n2 = n1 + nonTriad.get(idx);
+            n3 = n2 + nonTriad.get(Math.abs(idx - 1));
         }
         List<Integer> triad = List.of(n1, n2, n3);
         curNotes = triad.stream()
@@ -88,7 +92,9 @@ class ChordsCmp extends JPanel {
     }
 
     public static void main(String[] args) {
-        new ChordsCmp(new NoteUtilsImpl()).checkProbabilityDistribution();
+        ChordsCmp chordsCmp = new ChordsCmp(new NoteUtilsImpl());
+        chordsCmp.checkProbabilityDistribution();
+//        chordsCmp.findAllNonTriads();
     }
 
     private void checkProbabilityDistribution() {
@@ -114,5 +120,26 @@ class ChordsCmp extends JPanel {
             .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
         System.out.println("sumOfNonEmpty = " + sumOfNonEmpty);
         System.out.println("sumOfEmpty = " + sumOfEmpty);
+    }
+
+    private void findAllNonTriads() {
+        int base = noteUtils.strToNote("4C");
+        List<List<Integer>> nonTriads = new ArrayList<>();
+        for (int right = base + 11; base + 1 < right; right--) {
+            for (int middle = base + 1; middle < right; middle++) {
+                if (noteUtils.triadToStr(List.of(base, middle, right)).isEmpty()) {
+                    nonTriads.add(
+                        List.of((middle - base), (right - middle), (base + 12 - right))
+                    );
+                }
+            }
+        }
+        Comparator<List<Integer>> comparingFirstElem = Comparator.comparing(List::getFirst);
+        nonTriads.stream()
+            .filter(l -> !l.contains(1) && !l.contains(2))
+            .map(l -> List.of(l.get(0), l.get(1)).stream().sorted().toList())
+            .distinct()
+            .sorted(comparingFirstElem.thenComparing(l -> l.get(1)))
+            .forEach(l -> System.out.println("Non-triad: " + l.get(0) + "+" + l.get(1)));
     }
 }
