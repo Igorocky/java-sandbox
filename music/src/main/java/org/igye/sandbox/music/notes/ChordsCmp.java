@@ -24,11 +24,6 @@ class ChordsCmp extends JPanel {
     private List<Note> curNotes;
     private Optional<String> curChord;
     private boolean lastAnsIsCorrect = true;
-    private List<List<Integer>> nonTriads = List.of(
-        List.of(3, 3),
-        List.of(3, 6),
-        List.of(4, 4)
-    );
 
     public ChordsCmp(NoteUtils noteUtils) {
         this.noteUtils = noteUtils;
@@ -56,10 +51,9 @@ class ChordsCmp extends JPanel {
             n2 = n1 + (rand.nextBoolean() ? 4 : 3);
             n3 = n1 + 7;
         } else {
-            List<Integer> nonTriad = nonTriads.get(rand.nextInt(nonTriads.size()));
-            int idx = rand.nextInt(2);
-            n2 = n1 + nonTriad.get(idx);
-            n3 = n2 + nonTriad.get(Math.abs(idx - 1));
+            int dist = rand.nextInt(3, 5);
+            n2 = n1 + dist;
+            n3 = n2 + dist;
         }
         List<Integer> triad = List.of(n1, n2, n3);
         curNotes = triad.stream()
