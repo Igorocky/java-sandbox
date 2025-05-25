@@ -10,6 +10,9 @@
     <packaging>war</packaging>
     <name>example-web-app Maven Webapp</name>
     <url>http://maven.apache.org</url>
+    <properties>
+        <maven.compiler.proc>full</maven.compiler.proc>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -24,6 +27,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.12.2</version>
@@ -32,5 +41,12 @@
     </dependencies>
     <build>
         <finalName>example-web-app</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+        </plugins>
     </build>
 </project>
