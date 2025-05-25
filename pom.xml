@@ -11,6 +11,7 @@
     <modules>
         <module>math</module>
         <module>music</module>
+        <module>example-web-app</module>
     </modules>
 
     <properties>
