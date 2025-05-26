@@ -5,15 +5,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.igye.sandbox.examplewebapp.App;
+import org.igye.sandbox.examplewebapp.StatefulWebController;
+import org.igye.sandbox.examplewebapp.controllers.TextFormatController;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.List;
+import java.util.Optional;
 
 public class AppImpl implements App {
     private static App app;
 
     private final Context context;
+    private final List<StatefulWebController> controllers;
 
     public AppImpl() {
         try {
@@ -21,6 +26,9 @@ public class AppImpl implements App {
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+        this.controllers = List.of(
+                new TextFormatController()
+        );
     }
 
     @SneakyThrows
@@ -32,8 +40,15 @@ public class AppImpl implements App {
     @SneakyThrows
     @Override
     public void forwardToJsp(HttpServletRequest request, HttpServletResponse response, String path) {
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("jsp/" + path + ".jsp");
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/jsp/" + path + ".jsp");
         requestDispatcher.forward(request, response);
+    }
+
+    @Override
+    public Optional<StatefulWebController> lookupController(String path) {
+        return controllers.stream()
+                .filter(ctrl -> path.equals(ctrl.getPath()))
+                .findFirst();
     }
 
     public static App getInstance() {
