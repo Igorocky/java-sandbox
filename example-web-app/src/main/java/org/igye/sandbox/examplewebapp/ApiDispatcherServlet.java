@@ -1,11 +1,9 @@
-package org.igye.sandbox.examplewebapp.servlets;
+package org.igye.sandbox.examplewebapp;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.tuple.Pair;
-import org.igye.sandbox.examplewebapp.App;
-import org.igye.sandbox.examplewebapp.StatefulWebController;
 import org.igye.sandbox.examplewebapp.impl.AppImpl;
 
 import java.util.Optional;

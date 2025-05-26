@@ -1,6 +1,6 @@
-<%@ page import="org.igye.sandbox.examplewebapp.servlets.textformat.TextFormatCtx" %>
-<%@ page import="static org.igye.sandbox.examplewebapp.servlets.textformat.TextFormatServlet.ATTR_TEXT_TO_FORMAT" %>
+<%@ page import="org.igye.sandbox.examplewebapp.impl.TextFormatCtx" %>
 <%@ page import="org.apache.commons.text.StringEscapeUtils" %>
+<%@ page import="static org.igye.sandbox.examplewebapp.impl.TextFormatController.ATTR_TEXT_TO_FORMAT" %>
 <%
     TextFormatCtx ctx = (TextFormatCtx) request.getAttribute("ctx");
 %>

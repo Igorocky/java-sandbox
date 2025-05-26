@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.igye.sandbox.examplewebapp.App;
 import org.igye.sandbox.examplewebapp.StatefulWebController;
-import org.igye.sandbox.examplewebapp.controllers.TextFormatController;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

@@ -6,26 +6,10 @@
   <display-name>Archetype Created Web Application</display-name>
 
   <servlet>
-    <servlet-name>HelloServlet</servlet-name>
-    <servlet-class>org.igye.sandbox.examplewebapp.servlets.HelloServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>TextFormatServlet</servlet-name>
-    <servlet-class>org.igye.sandbox.examplewebapp.servlets.textformat.TextFormatServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ApiDispatcherServlet</servlet-name>
-    <servlet-class>org.igye.sandbox.examplewebapp.servlets.ApiDispatcherServlet</servlet-class>
+    <servlet-class>org.igye.sandbox.examplewebapp.ApiDispatcherServlet</servlet-class>
   </servlet>
 
-  <servlet-mapping>
-    <servlet-name>HelloServlet</servlet-name>
-    <url-pattern>/hello</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>TextFormatServlet</servlet-name>
-    <url-pattern>/format_text</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ApiDispatcherServlet</servlet-name>
     <url-pattern>/api/*</url-pattern>

@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp.servlets.textformat;
+package org.igye.sandbox.examplewebapp.impl;
 
 import lombok.Builder;
 import lombok.Data;
