@@ -1,4 +1,6 @@
-package org.igye.sandbox.examplewebapp;
+package org.igye.sandbox.examplewebapp.app;
+
+import org.igye.sandbox.examplewebapp.web.StatefulWebController;
 
 import java.util.Optional;
 

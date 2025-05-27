@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp;
+package org.igye.sandbox.examplewebapp.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 

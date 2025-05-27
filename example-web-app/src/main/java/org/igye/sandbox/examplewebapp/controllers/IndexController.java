@@ -1,8 +1,8 @@
 package org.igye.sandbox.examplewebapp.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.igye.sandbox.examplewebapp.StatefulWebController;
 import org.igye.sandbox.examplewebapp.html.HtmlBuilder;
+import org.igye.sandbox.examplewebapp.web.StatefulWebController;
 
 import java.util.List;
 import java.util.Map;

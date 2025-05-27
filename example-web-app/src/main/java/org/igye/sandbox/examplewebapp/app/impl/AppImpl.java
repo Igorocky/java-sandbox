@@ -1,8 +1,10 @@
-package org.igye.sandbox.examplewebapp;
+package org.igye.sandbox.examplewebapp.app.impl;
 
 import lombok.SneakyThrows;
+import org.igye.sandbox.examplewebapp.app.App;
 import org.igye.sandbox.examplewebapp.controllers.IndexController;
 import org.igye.sandbox.examplewebapp.controllers.TextFormatController;
+import org.igye.sandbox.examplewebapp.web.StatefulWebController;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

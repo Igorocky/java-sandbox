@@ -7,7 +7,7 @@
 
   <servlet>
     <servlet-name>ApiDispatcherServlet</servlet-name>
-    <servlet-class>org.igye.sandbox.examplewebapp.ApiDispatcherServlet</servlet-class>
+    <servlet-class>org.igye.sandbox.examplewebapp.web.ApiDispatcherServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

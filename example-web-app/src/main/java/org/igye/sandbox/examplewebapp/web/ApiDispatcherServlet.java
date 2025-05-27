@@ -1,9 +1,11 @@
-package org.igye.sandbox.examplewebapp;
+package org.igye.sandbox.examplewebapp.web;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.igye.sandbox.examplewebapp.app.App;
+import org.igye.sandbox.examplewebapp.app.impl.AppImpl;
 
 import java.util.Optional;
 
