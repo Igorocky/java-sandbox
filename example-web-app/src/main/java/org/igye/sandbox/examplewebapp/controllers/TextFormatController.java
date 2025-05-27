@@ -53,14 +53,14 @@ public class TextFormatController extends HtmlBuilder implements StatefulWebCont
             h("form", Map.of("method", "post"),
                 h("h4", text("Text to format")),
                 h("textarea", Map.of("name", ATTR_TEXT_TO_FORMAT, "cols", "100", "rows", "10"),
-                    text(esc(state.getTextToFormat()))
+                    text(state.getTextToFormat())
                 ),
                 h("br"),
                 h("button", Map.of("type", "submit"), text("Format"))
             ),
             state.getFormattedText().map(formattedText -> frag(
                 h("h4", text("Formatted text")),
-                h("pre", text(esc(formattedText)))
+                h("pre", text(formattedText))
             )).orElse(null)
         )).toString();
     }

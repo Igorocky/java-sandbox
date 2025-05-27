@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class HtmlBuilder {
     protected HtmlText text(String text) {
-        return new HtmlText(text);
+        return new HtmlText(esc(text));
     }
 
     protected HtmlElem h(String tagName, Map<String, String> attrs, HtmlElem... children) {
