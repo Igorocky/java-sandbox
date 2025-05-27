@@ -2,14 +2,12 @@ package org.igye.sandbox.examplewebapp.impl;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.With;
+
+import java.util.Optional;
 
 @Data
 @Builder
 public class TextFormatCtx {
-    @Builder.Default
-    private String textToFormat = "";
-    @Builder.Default
-    @With
-    private String formattedText = "";
+    private String textToFormat;
+    private Optional<String> formattedText;
 }

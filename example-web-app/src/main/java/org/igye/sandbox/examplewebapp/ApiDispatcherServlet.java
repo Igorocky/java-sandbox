@@ -3,7 +3,7 @@ package org.igye.sandbox.examplewebapp;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.tuple.Pair;
+import lombok.SneakyThrows;
 import org.igye.sandbox.examplewebapp.impl.AppImpl;
 
 import java.util.Optional;
@@ -24,17 +24,17 @@ public class ApiDispatcherServlet extends HttpServlet {
         process(req, resp);
     }
 
+    @SneakyThrows
     private void process(HttpServletRequest req, HttpServletResponse resp) {
         String path = Optional.ofNullable(req.getPathInfo()).map(s -> s.substring(1)).orElse("");
         StatefulWebController controller = app.lookupController(path).orElseThrow(() -> new RuntimeException(String.format(
                 "Cannot find a controller for the path '%s'.", path
         )));
-        Object state = controller.restoreState(req);
-        Optional<Object> action = controller.decodeAction(req, state);
-        Object newState = action.map(act -> controller.updateState(state, act)).orElse(state);
+        Object state = controller.loadState(req);
+        Object newState = ((Optional<Object>) controller.decodeAction(req, state))
+                .map(act -> controller.updateState(state, act))
+                .orElse(state);
         controller.saveState(newState);
-        Pair<Object, String> ctxAndJsp = controller.renderState(newState);
-        req.setAttribute("ctx", ctxAndJsp.getLeft());
-        app.forwardToJsp(req, resp, ctxAndJsp.getRight());
+        resp.getWriter().write(controller.renderState(newState));
     }
 }
