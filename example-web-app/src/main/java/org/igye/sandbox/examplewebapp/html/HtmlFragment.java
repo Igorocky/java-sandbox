@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp.html;
 
 import org.apache.commons.collections4.CollectionUtils;
 

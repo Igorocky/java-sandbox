@@ -1,11 +1,12 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp;
 
 import lombok.SneakyThrows;
-import org.igye.sandbox.examplewebapp.App;
-import org.igye.sandbox.examplewebapp.StatefulWebController;
+import org.igye.sandbox.examplewebapp.controllers.IndexController;
+import org.igye.sandbox.examplewebapp.controllers.TextFormatController;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -20,9 +21,14 @@ public class AppImpl implements App {
     @SneakyThrows
     public AppImpl() {
         this.context = InitialContext.doLookup("java:comp/env");
-        this.controllers = Stream.of(
+        Map<String, StatefulWebController> allControllers = Stream.of(
             new TextFormatController()
         ).collect(Collectors.toMap(TextFormatController::getPath, Function.identity()));
+        allControllers.put(
+            "",
+            new IndexController(allControllers.values().stream().map(StatefulWebController::getPath).sorted().toList())
+        );
+        this.controllers = Collections.unmodifiableMap(allControllers);
     }
 
     @SneakyThrows

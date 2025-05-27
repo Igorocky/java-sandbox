@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp.html;
 
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -15,7 +15,7 @@ public class HtmlBuilder {
         return new HtmlTag(tagName, attrs, childrenArrayToList(children));
     }
 
-    protected HtmlElem h(String tagName, Map<String, String> attrs, List<HtmlElem> children) {
+    protected HtmlElem h(String tagName, Map<String, String> attrs, List<? extends HtmlElem> children) {
         return new HtmlTag(tagName, attrs, children);
     }
 
@@ -27,7 +27,7 @@ public class HtmlBuilder {
         return new HtmlTag(tagName, null, childrenArrayToList(children));
     }
 
-    protected HtmlElem h(String tagName, List<HtmlElem> children) {
+    protected HtmlElem h(String tagName, List<? extends HtmlElem> children) {
         return new HtmlTag(tagName, null, children);
     }
 
@@ -48,6 +48,10 @@ public class HtmlBuilder {
     }
 
     protected HtmlElem simplePageWithTitle(String title, HtmlElem... content) {
+        return simplePageWithTitle(title, childrenArrayToList(content));
+    }
+
+    protected HtmlElem simplePageWithTitle(String title, List<? extends HtmlElem> content) {
         return h("html",
             h("head",
                 h("title", text(title))

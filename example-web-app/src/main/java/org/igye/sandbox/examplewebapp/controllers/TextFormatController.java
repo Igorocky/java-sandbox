@@ -1,14 +1,14 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.igye.sandbox.examplewebapp.StatefulWebController;
+import org.igye.sandbox.examplewebapp.html.HtmlBuilder;
 
 import java.util.Map;
 import java.util.Optional;
 
-public class TextFormatController extends HtmlBuilder
-    implements StatefulWebController<TextFormatCtx, Void, TextFormatCtx> {
+public class TextFormatController extends HtmlBuilder implements StatefulWebController<TextFormatCtx, Void> {
 
     public static final String ATTR_TEXT_TO_FORMAT = "TEXT_TO_FORMAT";
 

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Optional;
 
-public interface StatefulWebController<S, A, R> {
+public interface StatefulWebController<S, A> {
     String getPath();
 
     S loadState(HttpServletRequest req);

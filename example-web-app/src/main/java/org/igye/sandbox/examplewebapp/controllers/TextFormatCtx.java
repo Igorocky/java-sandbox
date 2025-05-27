@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp.controllers;
 
 import lombok.Builder;
 import lombok.Data;

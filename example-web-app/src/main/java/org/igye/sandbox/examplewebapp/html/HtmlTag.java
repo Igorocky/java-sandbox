@@ -1,4 +1,4 @@
-package org.igye.sandbox.examplewebapp.impl;
+package org.igye.sandbox.examplewebapp.html;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 public class HtmlTag implements HtmlElem {
     private final String name;
     private final Map<String, String> attrs;
-    private final List<HtmlElem> children;
+    private final List<? extends HtmlElem> children;
 
-    public HtmlTag(String name, Map<String, String> attrs, List<HtmlElem> children) {
+    public HtmlTag(String name, Map<String, String> attrs, List<? extends HtmlElem> children) {
         this.name = name;
         this.attrs = attrs;
         this.children = children;
